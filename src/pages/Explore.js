@@ -1,51 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Explore.css';
-import { FiHeart, FiSearch, FiSliders } from 'react-icons/fi';
+import { FiHeart, FiSearch, FiSliders, FiX } from 'react-icons/fi';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { products, categories } from '../data/products';
 
-const products = [
-  { id: 1, name: 'Luxury Chocolate Hamper', price: 999, category: 'Hampers', occasion: 'Birthday', tag: 'Bestseller', image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&q=80', keywords: ['chocolate', 'sweets', 'candy', 'hamper', 'birthday', 'gift box'] },
-  { id: 2, name: 'Custom Photo Frame', price: 599, category: 'Personalized', occasion: 'Anniversary', tag: 'New', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80', keywords: ['photo', 'picture', 'frame', 'memory', 'anniversary', 'couple', 'personalized'] },
-  { id: 3, name: 'Aromatherapy Gift Set', price: 1299, category: 'Wellness', occasion: "Valentine's", tag: 'Trending', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=80', keywords: ['aroma', 'candle', 'spa', 'relax', 'wellness', 'scent', 'smell', 'valentine', 'love'] },
-  { id: 4, name: 'Personalized Jewellery Box', price: 849, category: 'Personalized', occasion: 'Wedding', tag: 'Bestseller', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80', keywords: ['jewellery', 'jewelry', 'ring', 'necklace', 'chain', 'wedding', 'marriage', 'bride'] },
-  { id: 5, name: 'Gourmet Tea Collection', price: 749, category: 'Hampers', occasion: 'Birthday', tag: 'New', image: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=400&q=80', keywords: ['tea', 'gourmet', 'drink', 'beverage', 'hamper', 'birthday', 'healthy'] },
-  { id: 6, name: 'Scented Candle Set', price: 649, category: 'Wellness', occasion: 'Housewarming', tag: 'Trending', image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=400&q=80', keywords: ['candle', 'scent', 'aroma', 'home', 'housewarming', 'decor', 'fragrance', 'smell'] },
-  { id: 7, name: 'Premium Skincare Hamper', price: 1599, category: 'Wellness', occasion: "Valentine's", tag: 'Bestseller', image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&q=80', keywords: ['skin', 'skincare', 'beauty', 'glow', 'face', 'cream', 'spa', 'self care', 'valentine', 'love'] },
-  { id: 8, name: 'Custom Name Necklace', price: 899, category: 'Personalized', occasion: 'Anniversary', tag: 'New', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&q=80', keywords: ['necklace', 'chain', 'jewellery', 'jewelry', 'name', 'personalized', 'anniversary', 'couple', 'love'] },
-  { id: 9, name: 'Dry Fruit Gift Box', price: 1099, category: 'Hampers', occasion: 'Festival', tag: 'Trending', image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&q=80', keywords: ['dry fruit', 'nuts', 'almonds', 'cashew', 'festival', 'diwali', 'eid', 'healthy', 'hamper'] },
-  { id: 10, name: 'Corporate Gift Set', price: 1999, category: 'Corporate', occasion: 'Corporate', tag: 'Bestseller', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400&q=80', keywords: ['corporate', 'office', 'work', 'boss', 'colleague', 'business', 'professional', 'bulk'] },
-  { id: 11, name: 'Baby Shower Hamper', price: 1299, category: 'Hampers', occasion: 'Baby Shower', tag: 'New', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=80', keywords: ['baby', 'newborn', 'infant', 'pregnancy', 'shower', 'mother', 'mom', 'cute'] },
-  { id: 12, name: 'Wedding Gift Hamper', price: 2499, category: 'Hampers', occasion: 'Wedding', tag: 'Bestseller', image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=400&q=80', keywords: ['wedding', 'marriage', 'bride', 'groom', 'couple', 'shaadi', 'reception', 'hamper'] },
-];
-
-const occasions = ['All', 'Birthday', 'Anniversary', "Valentine's", 'Wedding', 'Housewarming', 'Festival', 'Baby Shower', 'Corporate'];
-const categories = ['All', 'Hampers', 'Personalized', 'Wellness', 'Corporate'];
+const occasions = ['All', 'Birthday', 'Anniversary', "Valentine's", 'Wedding', 'Baby Shower', 'Festival', 'Corporate', 'General'];
 const sortOptions = ['Popularity', 'Price: Low to High', 'Price: High to Low', 'Newest'];
 
 function Explore() {
-  const [selectedOccasion, setSelectedOccasion] = useState('All');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
+  const [selectedCategory, setSelectedCategory] = useState(params.get('category') || 'all');
+  const [selectedOccasion, setSelectedOccasion] = useState(params.get('occasion') || 'All');
   const [selectedSort, setSelectedSort] = useState('Popularity');
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(params.get('search') || '');
   const [wishlist, setWishlist] = useState([]);
-  const [priceRange, setPriceRange] = useState(3000);
+  const [priceRange, setPriceRange] = useState(5000);
+
+  useEffect(() => {
+    setSelectedCategory(params.get('category') || 'all');
+    setSelectedOccasion(params.get('occasion') || 'All');
+    setSearch(params.get('search') || '');
+  }, [location.search]);
 
   const toggleWishlist = (id) => {
     setWishlist(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-const filtered = products
+  const filtered = products
+    .filter(p => selectedCategory === 'all' || p.category === selectedCategory)
     .filter(p => selectedOccasion === 'All' || p.occasion === selectedOccasion)
-    .filter(p => selectedCategory === 'All' || p.category === selectedCategory)
     .filter(p => p.price <= priceRange)
     .filter(p => {
       if (!search) return true;
-      const query = search.toLowerCase();
-      return (
-        p.name.toLowerCase().includes(query) ||
-        p.category.toLowerCase().includes(query) ||
-        p.occasion.toLowerCase().includes(query) ||
-        p.keywords.some(k => k.toLowerCase().includes(query))
-      );
+      const q = search.toLowerCase();
+      return p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.occasion.toLowerCase().includes(q) || p.keywords.some(k => k.toLowerCase().includes(q));
     })
     .sort((a, b) => {
       if (selectedSort === 'Price: Low to High') return a.price - b.price;
@@ -53,14 +44,35 @@ const filtered = products
       return 0;
     });
 
+  const currentCategory = categories.find(c => c.id === selectedCategory);
+
   return (
     <div className="explore">
 
-      {/* Page Header */}
+      {/* Header */}
       <div className="explore-header">
         <p className="section-label">OUR COLLECTION</p>
-        <h1>Explore Gifts</h1>
-        <p className="explore-sub">Discover thoughtfully curated gifts for every occasion</p>
+        <h1>{currentCategory ? currentCategory.label : 'All Gifts'}</h1>
+        <p className="explore-sub">{currentCategory ? currentCategory.description : 'Discover thoughtfully curated gifts for every occasion'}</p>
+      </div>
+
+      {/* Category Tabs */}
+      <div className="category-tabs">
+        <button
+          className={`category-tab ${selectedCategory === 'all' ? 'active' : ''}`}
+          onClick={() => { setSelectedCategory('all'); navigate('/explore'); }}
+        >
+          All Gifts
+        </button>
+        {categories.map(cat => (
+          <button
+            key={cat.id}
+            className={`category-tab ${selectedCategory === cat.id ? 'active' : ''}`}
+            onClick={() => { setSelectedCategory(cat.id); navigate(`/explore?category=${cat.id}`); }}
+          >
+            {cat.emoji} {cat.label}
+          </button>
+        ))}
       </div>
 
       {/* Search Bar */}
@@ -73,10 +85,11 @@ const filtered = products
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
+          {search && <FiX className="search-clear-btn" onClick={() => setSearch('')} />}
         </div>
       </div>
 
-      {/* Occasion Filter Pills */}
+      {/* Occasion Pills */}
       <div className="occasion-pills">
         {occasions.map(o => (
           <button
@@ -91,7 +104,7 @@ const filtered = products
 
       <div className="explore-body">
 
-        {/* Sidebar Filters */}
+        {/* Sidebar */}
         <aside className="sidebar">
           <div className="sidebar-section">
             <h4><FiSliders style={{marginRight:'8px'}}/>Filters</h4>
@@ -99,74 +112,51 @@ const filtered = products
 
           <div className="sidebar-section">
             <p className="filter-label">Category</p>
+            <div className={`filter-option ${selectedCategory === 'all' ? 'active' : ''}`} onClick={() => setSelectedCategory('all')}>All Gifts</div>
             {categories.map(c => (
-              <div
-                key={c}
-                className={`filter-option ${selectedCategory === c ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(c)}
-              >
-                {c}
+              <div key={c.id} className={`filter-option ${selectedCategory === c.id ? 'active' : ''}`} onClick={() => setSelectedCategory(c.id)}>
+                {c.emoji} {c.label}
               </div>
             ))}
           </div>
 
           <div className="sidebar-section">
-            <p className="filter-label">Max Price: ₹{priceRange}</p>
-            <input
-              type="range"
-              min="300"
-              max="3000"
-              step="100"
-              value={priceRange}
-              onChange={e => setPriceRange(Number(e.target.value))}
-              className="price-range"
-            />
-            <div className="price-labels">
-              <span>₹300</span>
-              <span>₹3000</span>
-            </div>
+            <p className="filter-label">Max Price: ₹{priceRange.toLocaleString()}</p>
+            <input type="range" min="100" max="5000" step="100" value={priceRange} onChange={e => setPriceRange(Number(e.target.value))} className="price-range" />
+            <div className="price-labels"><span>₹100</span><span>₹5,000</span></div>
           </div>
 
           <div className="sidebar-section">
             <p className="filter-label">Sort By</p>
             {sortOptions.map(s => (
-              <div
-                key={s}
-                className={`filter-option ${selectedSort === s ? 'active' : ''}`}
-                onClick={() => setSelectedSort(s)}
-              >
-                {s}
-              </div>
+              <div key={s} className={`filter-option ${selectedSort === s ? 'active' : ''}`} onClick={() => setSelectedSort(s)}>{s}</div>
             ))}
           </div>
         </aside>
 
-        {/* Product Grid */}
+        {/* Products */}
         <div className="products-section">
           <p className="results-count">{filtered.length} gifts found</p>
           {filtered.length === 0 ? (
-            <div className="no-results">
-              <p>No gifts found. Try adjusting your filters.</p>
-            </div>
+            <div className="no-results"><p>No gifts found. Try adjusting your filters.</p></div>
           ) : (
             <div className="products-grid">
               {filtered.map(product => (
                 <div className="product-card" key={product.id}>
-                  <div className="product-img">
+                  <div className="product-img" onClick={() => navigate(`/product/${product.id}`)} style={{cursor:'pointer'}}>
                     <img src={product.image} alt={product.name} />
-                    <button
-                      className={`wishlist-btn ${wishlist.includes(product.id) ? 'active' : ''}`}
-                      onClick={() => toggleWishlist(product.id)}
-                    >
+                    <button className={`wishlist-btn ${wishlist.includes(product.id) ? 'active' : ''}`} onClick={e => { e.stopPropagation(); toggleWishlist(product.id); }}>
                       <FiHeart />
                     </button>
                     <span className="product-tag">{product.tag}</span>
                   </div>
                   <div className="product-info">
-                    <p className="product-category">{product.category}</p>
-                    <h3>{product.name}</h3>
+                    <p className="product-category">{categories.find(c => c.id === product.category)?.label}</p>
+                    <h3 onClick={() => navigate(`/product/${product.id}`)} style={{cursor:'pointer'}}>{product.name}</h3>
                     <p className="product-price">₹{product.price.toLocaleString()}</p>
-                    <button className="btn-primary small">Customize</button>
+                    <button className="btn-primary small" onClick={() => navigate(`/product/${product.id}`)}>
+                      View & Personalize
+                    </button>
                   </div>
                 </div>
               ))}

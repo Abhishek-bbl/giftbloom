@@ -455,3 +455,103 @@ section h2 {
   display: block;
   margin-bottom: 20px;
 }
+/* ===== CATEGORIES ===== */
+.categories-section {
+  padding: 100px 60px;
+  background-color: #fff;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.category-card {
+  border: 1.5px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 32px 28px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-card:hover {
+  border-color: #e8a0b4;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(232,160,180,0.12);
+}
+
+.category-emoji {
+  font-size: 36px;
+  margin-bottom: 4px;
+}
+
+.category-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.category-card p {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.category-arrow {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8709a;
+  margin-top: 8px;
+}
+
+/* ===== OCCASION EMOJIS ===== */
+.occasion-emoji-text {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ===== PRODUCT CATEGORY LABEL ===== */
+.product-category {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #e8a0b4;
+  margin-bottom: 6px;
+}
+
+/* ===== PRODUCT CARD ACTIONS ===== */
+.product-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ===== SECTION CTA ===== */
+.section-cta {
+  text-align: center;
+  margin-top: 48px;
+}
+
+@media (max-width: 1024px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .categories-section {
+    padding: 60px 24px;
+  }
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

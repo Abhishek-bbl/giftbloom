@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import '../styles/Login.css';
 import { FiEye, FiEyeOff, FiArrowRight, FiCheck, FiMail, FiLock, FiUser, FiPhone } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { api } from '../api';
 
 function Login() {
+  const location = useLocation();
+  const navigate = useNavigate();
+const redirectTo = new URLSearchParams(location.search).get('redirect') || '/';
   const [mode, setMode] = useState('login'); // login | signup | forgot
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -39,33 +44,41 @@ function Login() {
   const strengthColor = ['', '#e24b4a', '#EF9F27', '#185FA5', '#3B6D11'];
   const pwdStrength = getStrength(signupPassword);
 
-  const handleLogin = () => {
-    if (!loginEmail.includes('@')) {
-      setLoginError('Please enter a valid email address');
-      return;
+const handleLogin = async () => {
+  if (!loginEmail.includes('@')) { setLoginError('Please enter a valid email address'); return; }
+  if (loginPassword.length < 6) { setLoginError('Password must be at least 6 characters'); return; }
+  setLoginError('');
+  try {
+    const res = await api.login({ email: loginEmail, password: loginPassword });
+    if (res.success) {
+      localStorage.setItem('giftbloom_token', res.token);
+      localStorage.setItem('giftbloom_user', JSON.stringify(res.user));
+      navigate('/' + redirectTo);
+    } else {
+      setLoginError(res.message);
     }
-    if (loginPassword.length < 6) {
-      setLoginError('Password must be at least 6 characters');
-      return;
-    }
-    setLoginError('');
-    // Will connect to backend in Step 11
-    alert('Login will be connected to backend in Step 11!');
-  };
+  } catch (err) {
+    setLoginError('Something went wrong. Please try again.');
+  }
+};
 
-  const handleSignup = () => {
-    if (signupPassword !== signupConfirm) {
-      setSignupError('Passwords do not match');
-      return;
+const handleSignup = async () => {
+  if (signupPassword !== signupConfirm) { setSignupError('Passwords do not match'); return; }
+  if (signupPassword.length < 8) { setSignupError('Password must be at least 8 characters'); return; }
+  setSignupError('');
+  try {
+    const res = await api.signup({ name: signupName, email: signupEmail, phone: signupPhone, password: signupPassword });
+    if (res.success) {
+      localStorage.setItem('giftbloom_token', res.token);
+      localStorage.setItem('giftbloom_user', JSON.stringify(res.user));
+      navigate('/' + redirectTo);
+    } else {
+      setSignupError(res.message);
     }
-    if (signupPassword.length < 8) {
-      setSignupError('Password must be at least 8 characters');
-      return;
-    }
-    setSignupError('');
-    // Will connect to backend in Step 11
-    alert('Signup will be connected to backend in Step 11!');
-  };
+  } catch (err) {
+    setSignupError('Something went wrong. Please try again.');
+  }
+};
 
   const switchMode = (newMode) => {
     setMode(newMode);

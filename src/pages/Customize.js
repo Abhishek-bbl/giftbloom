@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/Customize.css';
 import { FiCheck, FiUpload, FiX } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const occasionTemplates = {
   Birthday: [
@@ -156,6 +157,7 @@ function GiftCardPreview({ template, recipientName, senderName, message, photo, 
 }
 
 function Customize() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [selectedOccasion, setSelectedOccasion] = useState('Birthday');
   const [selectedTemplate, setSelectedTemplate] = useState(occasionTemplates['Birthday'][0]);
@@ -268,77 +270,90 @@ function Customize() {
           )}
 
           {/* STEP 2 — Personalize */}
-          {step === 2 && (
-            <div className="panel-section">
-              <h2>Personalize Your Card</h2>
-              <p className="panel-sub">Add your personal touch to make it truly special</p>
+         {/* STEP 2 — Personalize */}
+{step === 2 && (
+  <div className="panel-section">
+    <h2>Personalize Your Card</h2>
+    <p className="panel-sub">Add your personal touch — clean, simple and meaningful</p>
 
-              <div className="form-group">
-                <label className="filter-label">Recipient's Name *</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Sarah"
-                  value={recipientName}
-                  onChange={e => setRecipientName(e.target.value)}
-                  className="text-input"
-                />
-              </div>
+    <div className="personalize-form">
 
-              <div className="form-group">
-                <label className="filter-label">Your Name *</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Rahul"
-                  value={senderName}
-                  onChange={e => setSenderName(e.target.value)}
-                  className="text-input"
-                />
-              </div>
+      <div className="personalize-field">
+        <label>Recipient's Name <span className="required">*</span></label>
+        <input
+          type="text"
+          placeholder="Who is this gift for? e.g. Sarah"
+          value={recipientName}
+          onChange={e => setRecipientName(e.target.value)}
+          className="text-input"
+          maxLength={30}
+        />
+        <p className="field-hint">This will appear on the card as "Dear {recipientName || '...'}"</p>
+      </div>
 
-              <div className="form-group">
-                <label className="filter-label">Your Message</label>
-                <textarea
-                  className="message-box"
-                  placeholder="Write your heartfelt message here..."
-                  value={message}
-                  onChange={e => setMessage(e.target.value)}
-                  maxLength={150}
-                />
-                <p className="char-count">{message.length}/150 characters</p>
-              </div>
+      <div className="personalize-field">
+        <label>Your Name <span className="required">*</span></label>
+        <input
+          type="text"
+          placeholder="Your name e.g. Rahul"
+          value={senderName}
+          onChange={e => setSenderName(e.target.value)}
+          className="text-input"
+          maxLength={30}
+        />
+        <p className="field-hint">This will appear as "With love, {senderName || '...'}"</p>
+      </div>
 
-              <div className="form-group">
-                <label className="filter-label">Add a Personal Photo (Optional)</label>
-                {photo ? (
-                  <div className="photo-preview-box">
-                    <img src={photo} alt="Personal" />
-                    <button className="remove-photo" onClick={() => setPhoto(null)}>
-                      <FiX /> Remove
-                    </button>
-                  </div>
-                ) : (
-                  <label className="upload-box">
-                    <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
-                    <FiUpload className="upload-icon" />
-                    <p>Click to upload a photo</p>
-                    <span>PNG, JPG up to 10MB</span>
-                  </label>
-                )}
-              </div>
+      <div className="personalize-field">
+        <label>Your Message <span className="optional">(Optional)</span></label>
+        <textarea
+          className="message-box"
+          placeholder="Write something heartfelt... e.g. Wishing you all the happiness in the world on your special day!"
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          maxLength={150}
+        />
+        <div className="message-footer">
+          <p className="field-hint">Keep it short and meaningful</p>
+          <p className="char-count">{message.length}/150</p>
+        </div>
+      </div>
 
-              <div className="step-buttons">
-                <button className="btn-secondary" onClick={() => setStep(1)}>← Back</button>
-                <button
-                  className="btn-primary"
-                  onClick={() => setStep(3)}
-                  disabled={!recipientName || !senderName}
-                  style={{ opacity: (!recipientName || !senderName) ? 0.5 : 1 }}
-                >
-                  Continue to Add-ons →
-                </button>
-              </div>
-            </div>
-          )}
+      <div className="personalize-field">
+        <label>Personal Photo <span className="optional">(Optional)</span></label>
+        <p className="field-hint-top">Add a photo to make it extra special — it will appear on the card</p>
+        {photo ? (
+          <div className="photo-preview-box">
+            <img src={photo} alt="Personal" />
+            <button className="remove-photo" onClick={() => setPhoto(null)}>
+              <FiX /> Remove Photo
+            </button>
+          </div>
+        ) : (
+          <label className="upload-box">
+            <input type="file" accept="image/*" onChange={handlePhotoUpload} hidden />
+            <FiUpload className="upload-icon" />
+            <p>Click to upload a photo</p>
+            <span>PNG or JPG, up to 10MB</span>
+          </label>
+        )}
+      </div>
+
+    </div>
+
+    <div className="step-buttons">
+      <button className="btn-secondary" onClick={() => setStep(1)}>← Back</button>
+      <button
+        className="btn-primary"
+        onClick={() => setStep(3)}
+        disabled={!recipientName || !senderName}
+        style={{ opacity: (!recipientName || !senderName) ? 0.5 : 1 }}
+      >
+        Continue to Add-ons →
+      </button>
+    </div>
+  </div>
+)}
 
           {/* STEP 3 — Add-ons */}
           {step === 3 && (
@@ -450,8 +465,19 @@ function Customize() {
 
               <div className="step-buttons" style={{ marginTop: '32px' }}>
                 <button className="btn-secondary" onClick={() => setStep(3)}>← Back</button>
-                <button className="btn-primary">Proceed to Delivery →</button>
-              </div>
+<button
+  className="btn-primary"
+  onClick={() => {
+    const isLoggedIn = localStorage.getItem('giftbloom_user');
+    if (isLoggedIn) {
+      navigate('/delivery');
+    } else {
+      navigate('/login?redirect=delivery');
+    }
+  }}
+>
+  Proceed to Delivery →
+</button>              </div>
             </div>
           )}
 
